@@ -19,7 +19,7 @@ Folder operations nano-sched plugin
 
 ## folder.dist-clean (log, data)
 
-Creates or clean `<options.dist_folder>`.
+Creates or cleans `<options.dist_folder>`.
 
 
 [bithound-image]: https://www.bithound.io/github/Holixus/nano-sched-folder/badges/score.svg
