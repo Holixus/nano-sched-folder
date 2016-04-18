@@ -5,6 +5,7 @@ var assert = require('core-assert'),
     timer = require('nano-timer'),
     Promise = require('nano-promise'),
     util = require('util'),
+    Path = require('path'),
     fs = require('nano-fs');
 
 
@@ -66,26 +67,34 @@ var folder = require('../index.js'),
 		}
 	};
 
+function createFolders(root, list) {
+	return Promise.all(list.map(function (path) {
+		return fs.mkpath(Path.join(root, path));
+	}));
+}
+
+function createFiles(root, list) {
+	return Promise.all(list.map(function (path) {
+		return fs.writeFile(Path.join(root, path), path, 'utf8');
+	}));
+}
+
+var dist_files = [
+		'folder/1.txt', 'folder/2.txt', 'one/two/foo.bar', 'one/two/bar.foo', 'one/two-1/oops'
+	];
+
 function fsinit(log, data) {
 	return fs.empty(opts.dist_folder)
 		.catch(function () {
 			return fs.mkpath(opts.dist_folder);
 		})
 		.then(function () {
-			var folders = [
-				'/folder', '/ololo', '/one/two', '/one/two-1'
-			];
-			return Promise.all(folders.map(function (path) {
-				return fs.mkpath(opts.dist_folder+path);
-			}));
+			return createFolders(opts.dist_folder, [
+				'folder', 'ololo', 'one/two', 'one/two-1'
+			]);
 		})
 		.then(function () {
-			var files = [
-				'/folder/1.txt', '/folder/2.txt', '/one/two/foo.bar', '/one/two/bar.foo', '/one/two-1/oops'
-			];
-			return Promise.all(files.map(function (path) {
-				return fs.writeFile(opts.dist_folder+path, path, 'utf8');
-			}));
+			return createFiles(opts.dist_folder, dist_files);
 		})
 		.then(function () {
 			return [ log, data ];
@@ -141,4 +150,27 @@ suite('folder.dist-clean', function () {
 				done(e);
 			});
 	});
+
+	test('read', function (done) {
+
+		var log = new Logger('read', job),
+		    data = {
+					opts: {
+						dist_folder: opts.dist_folder,
+						sources_folder: opts.dist_folder
+					}
+				};
+
+		fsinit(log, data)
+			.spread(folder['read'])
+			.then(function () {
+				assert.deepStrictEqual(data.files.sort(), dist_files.sort());
+				done();
+			}).catch(function (e) {
+				if (log.acc.length)
+					console.log(log.acc);
+				done(e);
+			});
+	});
+
 });

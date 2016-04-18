@@ -21,6 +21,10 @@ Folder operations nano-sched plugin
 
 Creates or cleans `<options.dist_folder>`.
 
+## folder.read(log, data)
+
+Returns an array of all files pathes in `data.file`.
+
 
 [bithound-image]: https://www.bithound.io/github/Holixus/nano-sched-folder/badges/score.svg
 [bithound-url]: https://www.bithound.io/github/Holixus/nano-sched-folder

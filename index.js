@@ -15,6 +15,13 @@ module.exports = {
 				throw e;
 			return fs.mkpath(dist_folder);
 		});
+},
+
+'read': function readtree(log, data) {
+	return fs.readTree(data.sources_folder || data.opts.sources_folder || /* istanbul ignore next */ './src')
+		.then(function (list) {
+			data.files = list;
+		});
 }
 
 };
